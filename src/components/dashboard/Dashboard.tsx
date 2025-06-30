@@ -1,226 +1,195 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Package, 
-  ShoppingCart, 
-  AlertTriangle,
-  Euro,
-  Users,
-  Store
-} from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { TrendingUp, Package, Users, ShoppingCart, AlertTriangle, Euro } from "lucide-react";
 
-const Dashboard = () => {
-  const kpis = [
-    {
-      title: "Chiffre d'Affaires",
-      value: "€15,847",
-      change: "+12.5%",
-      trend: "up",
-      icon: Euro,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
-    },
-    {
-      title: "Ventes du Jour",
-      value: "47",
-      change: "+8.2%",
-      trend: "up",
-      icon: ShoppingCart,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
-    },
-    {
-      title: "Produits en Stock",
-      value: "1,247",
-      change: "-2.1%",
-      trend: "down",
-      icon: Package,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
-    },
-    {
-      title: "Alertes Stock",
-      value: "12",
-      change: "Critique",
-      trend: "alert",
-      icon: AlertTriangle,
-      color: "text-red-600",
-      bgColor: "bg-red-50"
-    }
-  ];
+const salesData = [
+  { name: 'Lun', ventes: 2400, revenus: 4800 },
+  { name: 'Mar', ventes: 1398, revenus: 2796 },
+  { name: 'Mer', ventes: 9800, revenus: 19600 },
+  { name: 'Jeu', ventes: 3908, revenus: 7816 },
+  { name: 'Ven', ventes: 4800, revenus: 9600 },
+  { name: 'Sam', ventes: 3800, revenus: 7600 },
+  { name: 'Dim', ventes: 4300, revenus: 8600 },
+];
 
-  const recentSales = [
-    { id: "VT-001", client: "Marie Dubois", montant: "€245.50", produits: 3, heure: "14:30" },
-    { id: "VT-002", client: "Jean Martin", montant: "€89.90", produits: 1, heure: "14:15" },
-    { id: "VT-003", client: "Sarah Wilson", montant: "€156.75", produits: 2, heure: "13:45" },
-    { id: "VT-004", client: "Client Anonyme", montant: "€34.99", produits: 1, heure: "13:30" }
-  ];
+const topProducts = [
+  { name: 'Smartphone XR', sales: 245, revenue: 12250 },
+  { name: 'Écouteurs Bluetooth', sales: 189, revenue: 5670 },
+  { name: 'Chargeur USB-C', sales: 156, revenue: 1560 },
+  { name: 'Coque de Protection', sales: 134, revenue: 1340 },
+];
 
-  const topProducts = [
-    { nom: "Smartphone Galaxy S24", ventes: 23, stock: 45, statut: "En stock" },
-    { nom: "Casque Audio Bluetooth", ventes: 18, stock: 12, statut: "Stock faible" },
-    { nom: "Chargeur USB-C", ventes: 15, stock: 89, statut: "En stock" },
-    { nom: "Écouteurs sans fil", ventes: 12, stock: 3, statut: "Critique" }
-  ];
-
+export const Dashboard = () => {
   return (
     <div className="space-y-6">
-      {/* KPIs Grid */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <Card key={kpi.title} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  {kpi.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg ${kpi.bgColor}`}>
-                  <Icon className={`w-4 h-4 ${kpi.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-800">{kpi.value}</div>
-                <div className="flex items-center mt-2">
-                  {kpi.trend === "up" && (
-                    <>
-                      <TrendingUp className="w-4 h-4 text-green-600 mr-1" />
-                      <span className="text-sm text-green-600">{kpi.change}</span>
-                    </>
-                  )}
-                  {kpi.trend === "down" && (
-                    <>
-                      <TrendingDown className="w-4 h-4 text-red-600 mr-1" />
-                      <span className="text-sm text-red-600">{kpi.change}</span>
-                    </>
-                  )}
-                  {kpi.trend === "alert" && (
-                    <Badge variant="destructive" className="text-xs">
-                      {kpi.change}
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Ventes Récentes */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <ShoppingCart className="w-5 h-5 text-blue-600" />
-              <span>Ventes Récentes</span>
-            </CardTitle>
-            <CardDescription>
-              Dernières transactions de la journée
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Revenus du Jour</CardTitle>
+            <Euro className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentSales.map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-slate-800">{sale.client}</p>
-                    <p className="text-sm text-slate-500">
-                      {sale.id} • {sale.produits} produit{sale.produits > 1 ? 's' : ''}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-slate-800">{sale.montant}</p>
-                    <p className="text-sm text-slate-500">{sale.heure}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="text-2xl font-bold">€ 12,450</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600">+12.5%</span> par rapport à hier
+            </p>
           </CardContent>
         </Card>
 
-        {/* Produits Populaires */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ventes</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">247</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600">+8.2%</span> par rapport à hier
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Produits</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,245</div>
+            <p className="text-xs text-muted-foreground">12 nouveaux cette semaine</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Utilisateurs Actifs</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">12</div>
+            <p className="text-xs text-muted-foreground">2 connectés maintenant</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Package className="w-5 h-5 text-orange-600" />
-              <span>Produits Populaires</span>
-            </CardTitle>
-            <CardDescription>
-              Meilleurs ventes de la semaine
-            </CardDescription>
+            <CardTitle>Ventes de la Semaine</CardTitle>
+            <CardDescription>Évolution des ventes et revenus</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="ventes" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tendance des Revenus</CardTitle>
+            <CardDescription>Revenus quotidiens</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="revenus" stroke="#10b981" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tables and Lists */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Produits les Plus Vendus</CardTitle>
+            <CardDescription>Top 4 cette semaine</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {topProducts.map((product, index) => (
-                <div key={product.nom} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-800">{product.nom}</p>
-                    <p className="text-sm text-slate-500">{product.ventes} ventes • Stock: {product.stock}</p>
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <span className="text-sm font-semibold text-blue-600">{index + 1}</span>
+                    </div>
+                    <div>
+                      <p className="font-medium">{product.name}</p>
+                      <p className="text-sm text-gray-500">{product.sales} ventes</p>
+                    </div>
                   </div>
-                  <Badge 
-                    variant={
-                      product.statut === "Critique" ? "destructive" : 
-                      product.statut === "Stock faible" ? "secondary" : "default"
-                    }
-                    className="text-xs"
-                  >
-                    {product.statut}
-                  </Badge>
+                  <div className="text-right">
+                    <p className="font-semibold">€ {product.revenue.toLocaleString()}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Alertes et Actions Rapides */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="border-red-200 bg-red-50">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-red-700 flex items-center space-x-2">
-              <AlertTriangle className="w-5 h-5" />
-              <span>Alertes Stock</span>
+            <CardTitle className="flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2 text-amber-500" />
+              Alertes Stock
             </CardTitle>
+            <CardDescription>Produits à réapprovisionner</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-red-600">12 produits sous le seuil critique</p>
-            <button className="mt-2 text-sm text-red-700 underline hover:text-red-800">
-              Voir les détails
-            </button>
-          </CardContent>
-        </Card>
-
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader>
-            <CardTitle className="text-blue-700 flex items-center space-x-2">
-              <Users className="w-5 h-5" />
-              <span>Équipe Active</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-blue-600">8 vendeurs connectés</p>
-            <p className="text-sm text-blue-500 mt-1">3 rapports en attente</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader>
-            <CardTitle className="text-green-700 flex items-center space-x-2">
-              <Store className="w-5 h-5" />
-              <span>Magasins</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-green-600">3 magasins actifs</p>
-            <p className="text-sm text-green-500 mt-1">Tous opérationnels</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Écouteurs Bluetooth</p>
+                  <p className="text-sm text-gray-500">Magasin Central</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={15} className="w-20" />
+                  <span className="text-sm font-medium">3/20</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Chargeur USB-C</p>
+                  <p className="text-sm text-gray-500">Magasin Central</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={25} className="w-20" />
+                  <span className="text-sm font-medium">5/20</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Coque iPhone</p>
+                  <p className="text-sm text-gray-500">Magasin Sud</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={40} className="w-20" />
+                  <span className="text-sm font-medium">8/20</span>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
     </div>
   );
 };
-
-export { Dashboard };

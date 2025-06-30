@@ -9,7 +9,390 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          nom: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          nom: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          nom?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      clients: {
+        Row: {
+          adresse: string | null
+          created_at: string
+          email: string | null
+          id: string
+          nom: string
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          adresse?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adresse?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fournisseurs: {
+        Row: {
+          adresse: string | null
+          contact: string | null
+          created_at: string
+          email: string | null
+          id: string
+          nom: string
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          adresse?: string | null
+          contact?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adresse?: string | null
+          contact?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      magasins: {
+        Row: {
+          adresse: string | null
+          created_at: string
+          email: string | null
+          id: string
+          nom: string
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          adresse?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adresse?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nom?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      produits: {
+        Row: {
+          categorie_id: string | null
+          created_at: string
+          date_expiration: string | null
+          description: string | null
+          fournisseur_id: string | null
+          id: string
+          nom: string
+          prix_achat: number
+          prix_courant: number
+          prix_min_vente: number
+          sku: string
+          updated_at: string
+        }
+        Insert: {
+          categorie_id?: string | null
+          created_at?: string
+          date_expiration?: string | null
+          description?: string | null
+          fournisseur_id?: string | null
+          id?: string
+          nom: string
+          prix_achat: number
+          prix_courant: number
+          prix_min_vente: number
+          sku: string
+          updated_at?: string
+        }
+        Update: {
+          categorie_id?: string | null
+          created_at?: string
+          date_expiration?: string | null
+          description?: string | null
+          fournisseur_id?: string | null
+          id?: string
+          nom?: string
+          prix_achat?: number
+          prix_courant?: number
+          prix_min_vente?: number
+          sku?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produits_categorie_id_fkey"
+            columns: ["categorie_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "produits_fournisseur_id_fkey"
+            columns: ["fournisseur_id"]
+            isOneToOne: false
+            referencedRelation: "fournisseurs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          nom: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          nom: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nom?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stocks: {
+        Row: {
+          created_at: string
+          id: string
+          magasin_id: string
+          produit_id: string
+          quantite: number
+          seuil_alerte: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          magasin_id: string
+          produit_id: string
+          quantite?: number
+          seuil_alerte?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          magasin_id?: string
+          produit_id?: string
+          quantite?: number
+          seuil_alerte?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stocks_magasin_id_fkey"
+            columns: ["magasin_id"]
+            isOneToOne: false
+            referencedRelation: "magasins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stocks_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      system_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vente_produits: {
+        Row: {
+          created_at: string
+          id: string
+          prix_unitaire: number
+          produit_id: string
+          quantite: number
+          total_ligne: number
+          vente_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prix_unitaire: number
+          produit_id: string
+          quantite: number
+          total_ligne: number
+          vente_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prix_unitaire?: number
+          produit_id?: string
+          quantite?: number
+          total_ligne?: number
+          vente_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vente_produits_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vente_produits_vente_id_fkey"
+            columns: ["vente_id"]
+            isOneToOne: false
+            referencedRelation: "ventes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ventes: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          id: string
+          magasin_id: string
+          mode_paiement: string
+          numero_vente: string
+          remise: number | null
+          statut: string
+          total: number
+          vendeur_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          magasin_id: string
+          mode_paiement: string
+          numero_vente: string
+          remise?: number | null
+          statut?: string
+          total: number
+          vendeur_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          magasin_id?: string
+          mode_paiement?: string
+          numero_vente?: string
+          remise?: number | null
+          statut?: string
+          total?: number
+          vendeur_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ventes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ventes_magasin_id_fkey"
+            columns: ["magasin_id"]
+            isOneToOne: false
+            referencedRelation: "magasins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ventes_vendeur_id_fkey"
+            columns: ["vendeur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

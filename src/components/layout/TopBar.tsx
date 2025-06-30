@@ -1,8 +1,10 @@
 
-import { Bell, Search, User, Menu } from "lucide-react";
+import { Bell, Search, User, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TopBarProps {
   onMenuToggle: () => void;
@@ -19,6 +21,8 @@ const moduleNames: Record<string, string> = {
 };
 
 export const TopBar = ({ onMenuToggle, activeModule }: TopBarProps) => {
+  const { user, signOut } = useAuth();
+
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -61,10 +65,22 @@ export const TopBar = ({ onMenuToggle, activeModule }: TopBarProps) => {
             <Badge className="absolute -top-1 -right-1 w-2 h-2 p-0 bg-red-500" />
           </Button>
 
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-            <User className="w-5 h-5" />
-            <span className="hidden md:inline text-sm font-medium">Admin</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                <User className="w-5 h-5" />
+                <span className="hidden md:inline text-sm font-medium">
+                  {user?.email}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Se déconnecter
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
