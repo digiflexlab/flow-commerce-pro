@@ -8,7 +8,6 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, nom: string, role: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
 }
@@ -58,49 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, nom: string, role: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          nom,
-          role,
-        },
-      },
-    });
-
-    if (!error && data.user) {
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: data.user.id,
-            nom,
-            role,
-          },
-        ]);
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-      }
-    }
-
-    if (error) {
-      toast({
-        title: "Erreur d'inscription",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-
-    return { error };
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
     toast({
@@ -114,7 +70,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user,
       session,
       signIn,
-      signUp,
       signOut,
       loading,
     }}>
