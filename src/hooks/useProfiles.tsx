@@ -24,7 +24,14 @@ export const useProfiles = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProfiles(data || []);
+      
+      // Assurer que les rôles correspondent à notre type union
+      const typedProfiles: Profile[] = (data || []).map(profile => ({
+        ...profile,
+        role: profile.role as 'admin' | 'manager' | 'vendeur'
+      }));
+      
+      setProfiles(typedProfiles);
     } catch (error: any) {
       toast({
         title: "Erreur",

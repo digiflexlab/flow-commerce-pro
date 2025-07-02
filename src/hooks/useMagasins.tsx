@@ -3,114 +3,114 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-export const useSupabaseData = (table: string) => {
-  const [data, setData] = useState<any[]>([]);
+export const useMagasins = () => {
+  const [magasins, setMagasins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchData = async () => {
+  const fetchMagasins = async () => {
     try {
       setLoading(true);
-      const { data: result, error } = await supabase
-        .from(table)
+      const { data, error } = await supabase
+        .from('magasins')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData(result || []);
+      setMagasins(data || []);
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: `Impossible de charger les données de ${table}`,
+        description: "Impossible de charger les magasins",
         variant: "destructive",
       });
-      console.error(`Error fetching ${table}:`, error);
+      console.error('Error fetching magasins:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const insertData = async (newData: any) => {
+  const insertMagasin = async (newData: any) => {
     try {
       const { error } = await supabase
-        .from(table)
+        .from('magasins')
         .insert([newData]);
 
       if (error) throw error;
       
-      await fetchData();
+      await fetchMagasins();
       toast({
         title: "Succès",
-        description: "Données ajoutées avec succès",
+        description: "Magasin ajouté avec succès",
       });
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter les données",
+        description: "Impossible d'ajouter le magasin",
         variant: "destructive",
       });
-      console.error(`Error inserting to ${table}:`, error);
+      console.error('Error inserting magasin:', error);
     }
   };
 
-  const updateData = async (id: string, updates: any) => {
+  const updateMagasin = async (id: string, updates: any) => {
     try {
       const { error } = await supabase
-        .from(table)
+        .from('magasins')
         .update(updates)
         .eq('id', id);
 
       if (error) throw error;
       
-      await fetchData();
+      await fetchMagasins();
       toast({
         title: "Succès",
-        description: "Données mises à jour avec succès",
+        description: "Magasin mis à jour avec succès",
       });
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour les données",
+        description: "Impossible de mettre à jour le magasin",
         variant: "destructive",
       });
-      console.error(`Error updating ${table}:`, error);
+      console.error('Error updating magasin:', error);
     }
   };
 
-  const deleteData = async (id: string) => {
+  const deleteMagasin = async (id: string) => {
     try {
       const { error } = await supabase
-        .from(table)
+        .from('magasins')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
       
-      await fetchData();
+      await fetchMagasins();
       toast({
         title: "Succès",
-        description: "Données supprimées avec succès",
+        description: "Magasin supprimé avec succès",
       });
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer les données",
+        description: "Impossible de supprimer le magasin",
         variant: "destructive",
       });
-      console.error(`Error deleting from ${table}:`, error);
+      console.error('Error deleting magasin:', error);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [table]);
+    fetchMagasins();
+  }, []);
 
   return {
-    data,
+    data: magasins,
     loading,
-    fetchData,
-    insertData,
-    updateData,
-    deleteData,
+    fetchData: fetchMagasins,
+    insertData: insertMagasin,
+    updateData: updateMagasin,
+    deleteData: deleteMagasin,
   };
 };

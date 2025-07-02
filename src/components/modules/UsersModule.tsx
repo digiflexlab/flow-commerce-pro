@@ -1,225 +1,203 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Users, 
-  Search,
-  Edit,
-  Shield,
-  UserCheck,
-  Loader2
-} from "lucide-react";
-import { useProfiles } from "@/hooks/useProfiles";
+import { useState } from 'react';
+import { useProfiles } from '@/hooks/useProfiles';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Users, Search, UserPlus, Edit, Shield } from 'lucide-react';
+import CreateUserForm from '@/components/admin/CreateUserForm';
 
 const UsersModule = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [editingUser, setEditingUser] = useState<string | null>(null);
-  const { profiles, loading, updateProfile } = useProfiles();
+  const { profiles, loading, fetchProfiles, updateProfile } = useProfiles();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingRole, setEditingRole] = useState<'admin' | 'manager' | 'vendeur'>('vendeur');
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const roleLabels = {
-    admin: "Administrateur",
-    manager: "Manager",
-    vendeur: "Vendeur"
-  };
-
-  const roleColors = {
-    admin: "destructive",
-    manager: "default",
-    vendeur: "secondary"
-  } as const;
-
-  const filteredUsers = profiles.filter(user => 
-    user.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    roleLabels[user.role].toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProfiles = profiles.filter(profile =>
+    profile.nom.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const statsGlobales = {
-    total_users: profiles.length,
-    admins: profiles.filter(u => u.role === "admin").length,
-    managers: profiles.filter(u => u.role === "manager").length,
-    vendeurs: profiles.filter(u => u.role === "vendeur").length
+  const handleRoleUpdate = async (id: string) => {
+    await updateProfile(id, { role: editingRole });
+    setEditingId(null);
   };
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    await updateProfile(userId, { role: newRole as 'admin' | 'manager' | 'vendeur' });
-    setEditingUser(null);
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case 'admin': return 'destructive';
+      case 'manager': return 'default';
+      case 'vendeur': return 'secondary';
+      default: return 'outline';
+    }
   };
 
-  const getInitials = (nom: string) => {
-    return nom.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case 'admin': return 'Administrateur';
+      case 'manager': return 'Manager';
+      case 'vendeur': return 'Vendeur';
+      default: return role;
+    }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="ml-2">Chargement des utilisateurs...</span>
-      </div>
-    );
+    return <div className="flex justify-center items-center p-8">Chargement...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Gestion des Utilisateurs</h1>
-          <p className="text-slate-600">Gérez les comptes et permissions</p>
+          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Users className="w-6 h-6 text-violet-600" />
+            Gestion des Utilisateurs
+          </h2>
+          <p className="text-slate-600">Gérez les utilisateurs et leurs rôles</p>
         </div>
+        <Button onClick={() => setShowCreateForm(!showCreateForm)} className="gap-2">
+          <UserPlus className="w-4 h-4" />
+          {showCreateForm ? 'Fermer' : 'Nouvel Utilisateur'}
+        </Button>
       </div>
 
-      {/* Statistiques */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="w-6 h-6 text-violet-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{statsGlobales.total_users}</p>
-            <p className="text-sm text-slate-600">Total</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Shield className="w-6 h-6 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{statsGlobales.admins}</p>
-            <p className="text-sm text-slate-600">Admins</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{statsGlobales.managers}</p>
-            <p className="text-sm text-slate-600">Managers</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="w-6 h-6 text-orange-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{statsGlobales.vendeurs}</p>
-            <p className="text-sm text-slate-600">Vendeurs</p>
-          </CardContent>
-        </Card>
-      </div>
+      {showCreateForm && (
+        <div className="mb-6">
+          <CreateUserForm onUserCreated={() => {
+            fetchProfiles();
+            setShowCreateForm(false);
+          }} />
+        </div>
+      )}
 
-      {/* Recherche */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+        <CardHeader>
+          <CardTitle>Liste des Utilisateurs ({profiles.length})</CardTitle>
+          <CardDescription>
+            Recherchez et gérez tous les utilisateurs du système
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 mb-4">
+            <Search className="w-4 h-4 text-slate-400" />
             <Input
-              placeholder="Rechercher par nom ou rôle..."
+              placeholder="Rechercher par nom..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="max-w-sm"
             />
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Date de création</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredProfiles.map((profile) => (
+                  <TableRow key={profile.id}>
+                    <TableCell className="font-medium">{profile.nom}</TableCell>
+                    <TableCell>
+                      {editingId === profile.id ? (
+                        <div className="flex items-center gap-2">
+                          <Select
+                            value={editingRole}
+                            onValueChange={(value) => setEditingRole(value as 'admin' | 'manager' | 'vendeur')}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="vendeur">Vendeur</SelectItem>
+                              <SelectItem value="manager">Manager</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button size="sm" onClick={() => handleRoleUpdate(profile.id)}>
+                            Sauver
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                            Annuler
+                          </Button>
+                        </div>
+                      ) : (
+                        <Badge variant={getRoleBadgeVariant(profile.role)}>
+                          {getRoleLabel(profile.role)}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(profile.created_at).toLocaleDateString('fr-FR')}
+                    </TableCell>
+                    <TableCell>
+                      {editingId !== profile.id && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingId(profile.id);
+                            setEditingRole(profile.role);
+                          }}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredProfiles.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-slate-500">
+                      Aucun utilisateur trouvé
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
 
-      {/* Liste des utilisateurs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredUsers.map((user) => (
-          <Card key={user.id} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarFallback className="bg-violet-100 text-violet-700 font-semibold">
-                      {getInitials(user.nom)}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div>
-                    <CardTitle className="text-lg">{user.nom}</CardTitle>
-                    <CardDescription className="text-sm text-slate-600">
-                      ID: {user.id.slice(0, 8)}...
-                    </CardDescription>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  {editingUser === user.id ? (
-                    <Select 
-                      value={user.role} 
-                      onValueChange={(value) => handleRoleChange(user.id, value)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Administrateur</SelectItem>
-                        <SelectItem value="manager">Manager</SelectItem>
-                        <SelectItem value="vendeur">Vendeur</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant={roleColors[user.role]}>
-                      {roleLabels[user.role]}
-                    </Badge>
-                  )}
-                </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            Statistiques des Rôles
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {profiles.filter(p => p.role === 'admin').length}
               </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600">Créé le:</span>
-                <span className="font-medium">
-                  {new Date(user.created_at).toLocaleDateString('fr-FR')}
-                </span>
+              <div className="text-sm text-slate-600">Administrateurs</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {profiles.filter(p => p.role === 'manager').length}
               </div>
-              
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600">Modifié le:</span>
-                <span className="font-medium">
-                  {new Date(user.updated_at).toLocaleDateString('fr-FR')}
-                </span>
+              <div className="text-sm text-slate-600">Managers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                {profiles.filter(p => p.role === 'vendeur').length}
               </div>
-              
-              <div className="flex items-center justify-between pt-2 border-t">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setEditingUser(editingUser === user.id ? null : user.id)}
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  {editingUser === user.id ? 'Annuler' : 'Modifier'}
-                </Button>
-                
-                <Button variant="ghost" size="sm" className="text-violet-600 hover:text-violet-700">
-                  <Shield className="w-4 h-4 mr-1" />
-                  Permissions
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredUsers.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">
-              Aucun utilisateur trouvé
-            </h3>
-            <p className="text-slate-600 mb-4">
-              Aucun utilisateur ne correspond à vos critères de recherche.
-            </p>
-            <Button variant="outline" onClick={() => setSearchTerm("")}>
-              Réinitialiser la recherche
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+              <div className="text-sm text-slate-600">Vendeurs</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export { UsersModule };
+export default UsersModule;
