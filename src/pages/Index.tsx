@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
@@ -6,7 +5,7 @@ import { Dashboard } from "@/components/dashboard/Dashboard";
 import { ProductsModule } from "@/components/modules/ProductsModule";
 import { POSModule } from "@/components/modules/POSModule";
 import { StockModule } from "@/components/modules/StockModule";
-import { UsersModule } from "@/components/modules/UsersModule";
+import UsersModule from "@/components/modules/UsersModule";
 import { SettingsModule } from "@/components/modules/SettingsModule";
 
 const Index = () => {
